@@ -32,6 +32,10 @@ namespace CopsAndRobbers.Game
             }
 
             Console.ForegroundColor = ConsoleColor.White;
+            Console.SetCursorPosition(0,0);
+            Console.WriteLine($"Robberies: {field.Robberies}   Arrests: {field.Arrests}   Prisoners: {field.PeopleInPrison}");
+            if (field.PeopleInPrison > 0) 
+                Console.WriteLine($"Next release in {field.NextRelease} ticks.");
         }
 
         public void RenderTextField(TextField field, bool topAligned, ConsoleColor borderColor = ConsoleColor.Gray)
@@ -47,7 +51,7 @@ namespace CopsAndRobbers.Game
                 bottom = Height - 1;
                 top = bottom - field.Count - 2;
             }
-            DrawBorder(top, bottom, borderColor);
+
             var text = field.GetEnumerator();
             text.MoveNext();
             for (int i = 0; i < field.Count; i++)
@@ -59,38 +63,6 @@ namespace CopsAndRobbers.Game
             }
             text.Dispose();
 
-        }
-
-        private void DrawBorder(int top, int bottom, ConsoleColor borderColor)
-        {
-            Console.ForegroundColor = borderColor;
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.SetCursorPosition(0, top);
-
-            int height = bottom - top;
-            int realWidth = Width + 1;
-            Span<char> boxLine = new char[realWidth * height];
-
-            for (int i = 0; i < boxLine.Length; i++)
-            {
-                if (i == 0)
-                    boxLine[i] = '╔';
-                else if (i == Width - 1)
-                    boxLine[i] = '╗';
-                else if (i == (Height - 1) * realWidth)
-                    boxLine[i] = '╚';
-                else if (i == realWidth * Height - 2)
-                    boxLine[i] = '╝';
-                else if(i < Width || (i > (height - 1) * realWidth && i < realWidth * Height - 2))
-                    boxLine[i] = '═';
-                else if (i % realWidth == 0 || (i + 2) % realWidth == 0)
-                    boxLine[i] = '║';
-                else if ((i + 1) % realWidth == 0)
-                    boxLine[i] = '\n';
-                else
-                    boxLine[i] = '\uFEFF';
-            }
-            Console.Write(boxLine.ToString());
         }
     }
 }

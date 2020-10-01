@@ -9,7 +9,7 @@ namespace CopsAndRobbers.Game
 
         public override ConsoleColor SymbolColor => ConsoleColor.Blue;
 
-        public override (string, ConsoleColor) TakeItem(Person victim)
+        public override (string, CollisionEvent) TakeItem(Person victim)
         {
             if (victim is Thief && victim.Inventory.Count > 0)
             {
@@ -24,12 +24,12 @@ namespace CopsAndRobbers.Game
                 victim.Inventory.Clear();
 
                 sb.Remove(sb.Length - 1, 1);
-                sb.Append(" from thief.");
+                sb.Append(" from thief, and sent them to prison!");
 
-                return (sb.ToString(), SymbolColor);
+                return (sb.ToString(), CollisionEvent.Arrest);
             }
 
-            return (null, SymbolColor);
+            return (string.Empty, CollisionEvent.NoEvent);
         }
     }
 }

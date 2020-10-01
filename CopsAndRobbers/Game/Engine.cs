@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using Microsoft.VisualBasic;
 
 namespace CopsAndRobbers.Game
 {
     public class Engine
     {
+        private const int robberySentence = 300;
         private PlayField field;
         private Renderer renderer;
 
@@ -50,11 +50,12 @@ namespace CopsAndRobbers.Game
 
         public void Tick()
         {
+            field.ReleasePrisoners();
             field.MovePeople();
             renderer.RenderField(field);
             bool pause = TestCollisions();
 
-            if (pause) Thread.Sleep(2000);
+            if (pause) Thread.Sleep(1000);
         }
 
         private bool TestCollisions()
@@ -89,7 +90,22 @@ namespace CopsAndRobbers.Game
                 {
                     if (person.Equals(victim)) continue;
                     var result = person.TakeItem(victim);
-                    if (result.msg != null) textField.Add(result.msg, result.color);
+                    switch (result.collisionEvent)
+                    {
+                        case CollisionEvent.Robbery:
+                            field.Robberies++;
+                            textField.Add(result.msg, ConsoleColor.Red);
+                            break;
+                        case CollisionEvent.Arrest:
+                            field.PutInPrison(victim, robberySentence);
+                            field.Arrests++;
+                            textField.Add(result.msg, ConsoleColor.Blue);
+
+                            break;
+                        case CollisionEvent.FailedRobbery:
+                            textField.Add(result.msg, ConsoleColor.White);
+                            break;
+                    }
                 }
             }
 

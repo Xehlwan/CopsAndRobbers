@@ -5,14 +5,59 @@ namespace CopsAndRobbers.Game
     public class PlayField
     {
         private readonly List<Person> people = new List<Person>();
+        private readonly List<Prisoner> prisoners = new List<Prisoner>();
 
         public int Width { get; }
         public int Height { get; }
+        
+        public int Robberies { get; set; }
+        public int Arrests { get; set; }
+        public int PeopleInPrison => prisoners.Count;
+
+        public int NextRelease
+        {
+            get
+            {
+                if (prisoners.Count == 0) return 0;
+                int value = int.MaxValue;
+                foreach (var prisoner in prisoners)
+                {
+                    var release = prisoner.Sentence - prisoner.ServedTime;
+                    value = release < value ? release : value;
+                }
+
+                return value;
+            }
+        }
 
         public PlayField(int width, int height)
         {
             Width = width;
             Height = height;
+        }
+
+        public void PutInPrison(Person person, int time)
+        {
+            prisoners.Add(new Prisoner(person, time));
+            people.Remove(person);
+        }
+
+        public void ReleasePrisoners()
+        {
+            var release = new List<Prisoner>();
+            foreach (var prisoner in prisoners)
+            {
+                if (prisoner.ToBeReleased)
+                    release.Add(prisoner);
+
+                prisoner.Tick();
+            }
+
+            foreach (var prisoner in release)
+            {
+                people.Add(prisoner.Person);
+                prisoners.Remove(prisoner);
+            }
         }
 
         public void MovePeople()

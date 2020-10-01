@@ -5,7 +5,7 @@ namespace CopsAndRobbers.Game
 {
     public abstract class Person
     {
-        protected Random Rng;
+        protected static Random Rng = new Random();
         public List<Item> Inventory { get; } = new List<Item>();
 
         public Point Position { get; set; }
@@ -15,15 +15,16 @@ namespace CopsAndRobbers.Game
         public abstract char Symbol { get; }
         public abstract ConsoleColor SymbolColor { get; }
 
-        public Person() => Rng = new Random();
+        public Person()
+        {
+            Direction = (Direction) Rng.Next(1, 8 + 1);
+        }
 
-        public Person(int seed) => Rng = new Random(seed);
-
-        public virtual (string msg, ConsoleColor color) TakeItem(Person victim) => (null, ConsoleColor.Black);
+        public virtual (string msg, CollisionEvent collisionEvent) TakeItem(Person victim) => (string.Empty, CollisionEvent.NoEvent);
 
         public virtual void Move()
         {
-            Direction = (Direction) Rng.Next(1, 8 + 1);
+            
             Position = Direction switch
             {
                 Direction.Up => (Position.X, Position.Y - 1),
